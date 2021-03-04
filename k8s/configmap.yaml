@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fp-example
+  namespace: fp
+data:
+  application.conf: |
+    # these are our own config values defined by the app
+    simple-app {
+        answer=42
+    }
+  config_flag: 'true'

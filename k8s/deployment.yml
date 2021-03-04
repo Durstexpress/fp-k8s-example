@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fp-example
+  namespace: fp
+  labels:
+    app: fp-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fp-example
+  template:
+    metadata:
+      labels:
+        app: fp-example
+    spec:
+      containers:
+      - name: fp-example
+        image: durstexpress.azurecr.io/techops-k8sfp:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+            limits:
+              cpu: "0.5"
+            requests:
+              cpu: "0.25"
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /usr/src/app/conf
+          name: fp-example
+        env:
+        - name: "HELLO"
+          value: 'WORLD'
+        - name: "K8S"
+          valueFrom:
+            secretKeyRef:
+              name: fp-example
+              key: k8s
+        - name: FLAG
+          valueFrom:
+            configMapKeyRef:
+              name: fp-example
+              key: config_flag
+      volumes:
+      - name: fp-example
+        configMap:
+          name: fp-example
+          items:
+            - key: application.conf
+              path: application.conf
